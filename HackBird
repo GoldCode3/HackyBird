@@ -1,0 +1,151 @@
+import pygame
+import random
+
+
+black = (0,0,0)
+white = (250,250,250)
+green = (0, 255, 0)
+red = (255, 0, 0)
+
+pygame.init()
+
+#Creating the size of the playable field
+size = 700,500
+
+#Setting screen to size stored in variable 'size'
+screen = pygame.display.set_mode(size)
+
+#Creating the title for the game
+pygame.display.set_caption("Hacking Bird")
+
+#Setting 'done' to false in order to show that the game is still running
+done = False
+
+clock = pygame.time.Clock()
+
+def ball(x,y):
+    pygame.draw.circle(screen,black,[x,y], 20)
+
+
+end_sound = pygame.mixer.Sound("End.wav")
+def gameOver():
+    pygame.mixer.Sound.play(end_sound)
+    font = pygame.font.SysFont(None,55)
+    text = font.render("You've Been De-Hacked! >:(", True, red)
+    screen.blit(text, [150, 250])
+
+def obstacles(xLocation, yLocation, xSize, ySize):
+    pygame.draw.rect(screen, green, [xLocation, yLocation, xSize, ySize])
+    pygame.draw.rect(screen, green, [xLocation, int(yLocation+xSize+space), xSize, ySize + 500])
+
+
+def ScoreKeeper(x):
+    font = pygame.font.SysFont(None,55)
+    text = font.render("Score: " +str(score), True, black)
+    screen.blit(text, [0,0])
+
+
+#Dimensions of ball
+x = 250
+y = 250
+
+x_speed = 0
+y_speed = 0
+xSize = 70
+ySize = random.randint(0, 200)
+xLocation = 700
+space = 550
+obSpeed = 2.5
+yLocation = 0
+score = 0
+#Set ground to determine game end scenario
+ground = 476
+
+up_sound = pygame.mixer.Sound("UpBeeping.wav")
+
+#Created a while loop to iterate through different scenarios while the game is still live   
+while not done: 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                y_speed = -10
+                pygame.mixer.Sound.play(up_sound)
+                
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP:
+                y_speed = 3
+        
+        beep_short = pygame.mixer.Sound("Beep_Short.wav")
+        # if x == obstacles(50,50,50,50):
+        #     # pygame.mixer.Sound.play(beep_short)
+        # if y == obstacles(50,50,50,50):
+        #     # pygame.mixer.Sound.play(beep_short)
+
+    screen.fill(white)
+    obstacles(xLocation, yLocation, xSize, ySize)
+    ball(x,y)
+    ScoreKeeper(score)
+    
+    x += x_speed
+    y += y_speed
+    xLocation -= obSpeed
+
+    if x + 60 > xLocation and y - 60 < ySize and x - 15 < xSize + xLocation:
+        pygame.mixer.Sound.play(beep_short)
+    if y == 450:
+        pygame.mixer.Sound.play(beep_short)
+    if x + 60 > xLocation and y + 60 > ySize + space and x - 15 < xSize + xLocation:
+        pygame.mixer.Sound.play(beep_short)
+    if y == 50:
+            pygame.mixer.Sound.play(beep_short)
+    if x + 40 > xLocation and y - 40 < ySize and x - 15 < xSize + xLocation:
+        pygame.mixer.Sound.play(beep_short)
+        if y == 450:
+            pygame.mixer.Sound.play(beep_short)
+    if x + 40 > xLocation and y + 40 > ySize + space and x - 15 < xSize + xLocation:
+        pygame.mixer.Sound.play(beep_short)
+        if y == 450:
+            pygame.mixer.Sound.play(beep_short)
+    if x + 20 > xLocation and y - 20 < ySize and x - 15 < xSize + xLocation:
+        pygame.mixer.Sound.play(beep_short)
+        if y == 450:
+            pygame.mixer.Sound.play(beep_short)
+    if x + 20 > xLocation and y + 20 > ySize + space and x - 15 < xSize + xLocation:
+        pygame.mixer.Sound.play(beep_short)
+        if y == 450:
+            pygame.mixer.Sound.play(beep_short)
+    # if y > ground:
+
+    if y > ground:
+        gameOver()
+        y_speed = 0
+
+    ring_sound = pygame.mixer.Sound("Ring.wav")
+    if x + 20 > xLocation and y - 20 < ySize and x - 15 < xSize + xLocation:
+        gameOver()
+        obSpeed = 0
+        y_speed = 0
+
+    if x + 20 > xLocation and y + 20 > ySize + space and x - 15 < xSize + xLocation:
+        gameOver()
+        obSpeed = 0
+        y_speed = 0
+
+
+    if xLocation < -80:
+        xLocation = 700
+        ySize = random.randint(0, 350)
+
+    if x > xLocation and x < xLocation + 3:
+        pygame.mixer.Sound.play(ring_sound)
+        score += 1
+        
+
+    pygame.display.flip()
+    clock.tick(60)
+
+    
+#Ends the game
+pygame.quit()
